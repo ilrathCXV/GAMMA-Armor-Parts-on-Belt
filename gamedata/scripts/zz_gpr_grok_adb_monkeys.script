@@ -263,7 +263,7 @@ function grok_actor_damage_balancer.get_protection(shit,bone_id,k_ap)
 			af_bone_value = 0.06
 		end
 		if gpr_parts[sec] then
-			af_bone_value = gpr_parts[sec]
+			af_bone_value = gpr_parts[sec] * cond
 			was_grp_part = true
 		end
 
