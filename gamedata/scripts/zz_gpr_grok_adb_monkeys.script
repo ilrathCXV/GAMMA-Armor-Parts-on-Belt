@@ -1,0 +1,370 @@
+-- list of all wearable parts
+local gpr_parts =
+{
+	["prt_o_ballistic_1"] = 0.01,
+	["prt_o_ballistic_2"] = 0.017,
+	["prt_o_ballistic_3"] = 0.01,
+	["prt_o_ballistic_4"] = 0.01,
+	["prt_o_ballistic_5"] = 0.0033,
+	["prt_o_ballistic_6"] = 0.0033,
+	["prt_o_ballistic_7"] = 0,
+	["prt_o_ballistic_8"] = 0,
+	["prt_o_ballistic_9"] = 0,
+	["prt_o_ballistic_10"] = 0,
+	["prt_o_ballistic_11"] = 0,
+	["prt_o_ballistic_12"] = 0,
+	["prt_o_ballistic_13"] = 0,
+	["prt_o_ballistic_14"] = 0,
+	["prt_o_ballistic_15"] = 0.0033,
+	["prt_o_ballistic_16"] = 0,
+	["prt_o_ballistic_17"] = 0,
+	["prt_o_ballistic_18"] = 0,
+	["prt_o_ballistic_19"] = 0.01,
+	["prt_o_ballistic_20"] = 0,
+	
+	["prt_o_retardant_1"] = 0,
+	["prt_o_retardant_2"] = 0,
+	["prt_o_retardant_3"] = 0,
+	["prt_o_retardant_4"] = 0,
+	["prt_o_retardant_5"] = 0,
+	["prt_o_retardant_6"] = 0,
+	["prt_o_retardant_7"] = 0,
+	["prt_o_retardant_8"] = 0,
+	["prt_o_retardant_9"] = 0,
+	["prt_o_retardant_10"] = 0,
+	["prt_o_retardant_11"] = 0,
+	["prt_o_retardant_12"] = 0,
+	["prt_o_retardant_13"] = 0,
+	["prt_o_retardant_14"] = 0,
+	["prt_o_retardant_15"] = 0,
+	["prt_o_retardant_16"] = 0,
+	["prt_o_retardant_17"] = 0,
+	["prt_o_retardant_18"] = 0,
+	["prt_o_retardant_19"] = 0,
+	["prt_o_retardant_20"] = 0,
+}
+
+-- needed for the monkeypatch
+local hitboxes={}
+	hitboxes[19]="head"
+	hitboxes[17]="head"
+	hitboxes[16]="head"
+	hitboxes[15]="head"
+	hitboxes[14]="head"
+	hitboxes[13]="torso"
+	hitboxes[12]="torso"
+	hitboxes[11]="torso"
+	hitboxes[2]="torso"
+	hitboxes[20]="leftarm"
+	hitboxes[21]="leftarm"
+	hitboxes[22]="leftarm"
+	hitboxes[23]="leftarm"
+	hitboxes[33]="rightarm"
+	hitboxes[34]="rightarm"
+	hitboxes[35]="rightarm"
+	hitboxes[36]="rightarm"
+	hitboxes[3]="leftleg"
+	hitboxes[4]="leftleg"
+	hitboxes[7]="rightleg"
+	hitboxes[8]="rightleg"
+
+local was_grp_part = false
+
+-- Calculates player protection (funky monkeypatch)
+base_prot_getter = grok_actor_damage_balancer.get_protection
+function grok_actor_damage_balancer.get_protection(shit,bone_id,k_ap)
+
+	grok_actor_damage_balancer.total_prot = 0
+	grok_actor_damage_balancer.headshot = 0
+	grok_actor_damage_balancer.elemental = 0
+	grok_actor_damage_balancer.psy = 0
+	grok_actor_damage_balancer.adjuster = 1.00
+	local actor = db.actor
+
+	if shit.type == hit.fire_wound then
+		hit_type = HitTypeID["FireWound"]
+		immunity = "fire_wound_immunity"
+		protection = "FireWound"
+		booster_type_def = 15
+		grok_actor_damage_balancer.adjuster = 0.80
+		arti_adjuster = grok_actor_damage_balancer.adjuster
+		limiter = 0.85
+	end
+
+	if shit.type == hit.wound then
+		hit_type = HitTypeID["Wound"]
+		immunity = "wound_immunity"
+		protection = "Wound"
+		booster_type_def = 16
+		grok_actor_damage_balancer.adjuster = 0.58
+		arti_adjuster = grok_actor_damage_balancer.adjuster * 2
+		limiter = 0.90
+	end
+
+	if shit.type == hit.wound_2 then
+		hit_type = HitTypeID["Wound_2"]
+		immunity = "wound_2_immunity"
+		protection = "Wound_2"
+		booster_type_def = 16
+		grok_actor_damage_balancer.adjuster = 0.58
+		arti_adjuster = grok_actor_damage_balancer.adjuster
+		limiter = 0.90
+	end
+
+	if shit.type == hit.strike then
+		hit_type = HitTypeID["Strike"]
+		immunity = "strike_immunity"
+		protection = "Strike"
+		booster_type_def = 14
+		grok_actor_damage_balancer.adjuster = 0.55
+		arti_adjuster = grok_actor_damage_balancer.adjuster * 1.3
+		limiter = 0.80
+		grok_actor_damage_balancer.elemental = 1
+	end
+
+	if shit.type == hit.explosion then
+		hit_type = HitTypeID["Explosion"]
+		immunity = "explosion_immunity"
+		protection = "Explosion"
+		booster_type_def = 13
+		grok_actor_damage_balancer.adjuster = 0.45
+		arti_adjuster = 0.675
+		limiter = 0.90
+		grok_actor_damage_balancer.elemental = 1
+	end
+
+	if shit.type == hit.burn then
+		hit_type = HitTypeID["Burn"]
+		immunity = "burn_immunity"
+		protection = "Burn"
+		booster_type_def = 8
+		grok_actor_damage_balancer.adjuster = 1.00
+		arti_adjuster = grok_actor_damage_balancer.adjuster * 2.0
+		limiter = 0.95
+		grok_actor_damage_balancer.elemental = 1
+	end
+
+	if shit.type == hit.light_burn then
+		hit_type = HitTypeID["LightBurn"]
+		immunity = "burn_immunity"
+		protection = "Burn"
+		booster_type_def = 8
+		grok_actor_damage_balancer.adjuster = 1.00
+		arti_adjuster = grok_actor_damage_balancer.adjuster * 2.0
+		limiter = 0.95
+		grok_actor_damage_balancer.elemental = 1
+	end
+
+	if shit.type == hit.shock then
+		hit_type = HitTypeID["Shock"]
+		immunity = "shock_immunity"
+		protection = "Shock"
+		booster_type_def = 9
+		grok_actor_damage_balancer.adjuster = 0.102
+		arti_adjuster = grok_actor_damage_balancer.adjuster * 26.5
+		limiter = 0.95
+		grok_actor_damage_balancer.elemental = 1
+	end
+
+	if shit.type == hit.chemical_burn then
+		hit_type = HitTypeID["ChemicalBurn"]
+		immunity = "chemical_burn_immunity"
+		protection = "ChemicalBurn"
+		booster_type_def = 7
+		grok_actor_damage_balancer.adjuster = 1.32
+		arti_adjuster = grok_actor_damage_balancer.adjuster
+		limiter = 0.95
+		grok_actor_damage_balancer.elemental = 1
+	end
+
+--	if shit.type == hit.radiation then
+--		hit_type = HitTypeID["Radiation"]
+--		immunity = "radiation_immunity"
+--		protection = "Radiation"
+--		booster_type_def = 10
+--		adjuster = 0.80
+--		limiter = 1.00
+--	end
+
+	if shit.type == hit.telepatic then
+		hit_type = HitTypeID["Telepatic"]
+		immunity = "telepatic_immunity"
+		protection = "telepatic"
+		booster_type_def = 6
+		grok_actor_damage_balancer.adjuster = 1.70
+		arti_adjuster = 1.50
+		limiter = 0.99
+		grok_actor_damage_balancer.elemental = 1
+		grok_actor_damage_balancer.psy = 1
+	end
+
+	-- Special case for Headshot
+
+	if hitboxes[bone_id] == "head" then
+		grok_actor_damage_balancer.headshot = 1
+	end
+
+	-- Outfit protection
+	local armor_protection = 0
+	local armor_bone_value = 0
+	local outfit = actor:item_in_slot(7)
+		if (outfit) then
+		local cond = outfit:condition()
+		local c_outfit = outfit:cast_CustomOutfit()
+		if (c_outfit) then
+			if protection == "FireWound" then
+				armor_protection = c_outfit:GetBoneArmor( BoneID["bip01_spine"] ) * cond * grok_actor_damage_balancer.adjuster or 0
+			else
+				armor_protection = c_outfit:GetDefHitTypeProtection( hit_type ) * grok_actor_damage_balancer.adjuster or 0
+			end
+			armor_hit_frac = ini_sys:r_float_ex(outfit:section(), "hit_fraction_actor") or 1
+			armor_bone_value = (1 - armor_hit_frac) * cond * 0.75 or 0
+		end
+	end
+
+	-- Helmet protection
+	local helmet_protection = 0
+	local helmet_bone_value = 0
+   	local helmet = db.actor:item_in_slot(12)
+    	if (helmet) then
+		local cond = helmet:condition()
+		local c_helmet = helmet:cast_Helmet()
+		if (c_helmet) then
+			if protection == "FireWound" then
+				helmet_protection = c_helmet:GetBoneArmor( BoneID["bip01_head"] ) * cond * grok_actor_damage_balancer.adjuster or 0
+			else
+				helmet_protection = c_helmet:GetDefHitTypeProtection( hit_type ) * grok_actor_damage_balancer.adjuster or 0
+			end
+			helmet_hit_frac = ini_sys:r_float_ex(helmet:section(), "hit_fraction_actor") or 1
+			helmet_bone_value = (1 - helmet_hit_frac) * cond or 0
+        end
+	end
+
+	-- Artefacts protection
+	local artefacts_protection = 0
+	local artefacts_ap_res = 0
+	actor:iterate_belt( function(owner, obj)
+		local sec = obj:section()
+		local cond = obj:condition()
+
+		af_bone_value = 0
+		prot = 0
+
+		if sec == "af_kevlar" then
+			af_bone_value = 0.01
+		end
+		if sec == "af_kevlar_up" then
+			af_bone_value = 0.03
+		end
+		if sec == "af_plates" then
+			af_bone_value = 0.04
+		end
+		if sec == "af_plates_up" then
+			af_bone_value = 0.06
+		end
+		if gpr_parts[sec] then
+			af_bone_value = gpr_parts[sec]
+			was_grp_part = true
+		end
+
+		local immunities_sec = SYS_GetParam(0, sec, "hit_absorbation_sect", sec)
+		local prot = SYS_GetParam(2, immunities_sec, immunity , 0) * cond
+
+		if grok_actor_damage_balancer.headshot == 1 then
+			if sec == "af_kevlar" or sec == "af_kevlar_up" or sec == "af_plates" or sec == "af_plates_up" then
+				prot = 0
+				af_bone_value = 0
+			end
+			if was_grp_part and (immunity == "fire_wound_immunity" or immunity == "strike_immunity" or immunity == "explosion_immunity") then
+				prot = 0
+				af_bone_value = 0
+			end
+		end
+
+		artefacts_protection = artefacts_protection + prot
+		artefacts_ap_res = artefacts_ap_res + af_bone_value
+	end)
+	artefacts_protection = artefacts_protection * 0.6 * arti_adjuster -- scale to the displayed inventory values more or less
+
+	-- Booster protection
+	local booster_protection = 0
+	db.actor:cast_Actor():conditions():BoosterForEach( function(booster_type, booster_time, booster_value)
+		if booster_type == booster_type_def then
+			booster_protection = booster_value
+			if booster_type_def == 6 then
+				booster_protection  = booster_value * arti_adjuster * grok_actor_damage_balancer.adjuster
+			end
+			
+			
+		end
+	end)
+
+	if grok_actor_damage_balancer.elemental == 0 then
+		if grok_actor_damage_balancer.headshot == 1 then
+			armor_bone_value = 0
+			armor_protection = 0
+		else
+			helmet_bone_value = 0
+			helmet_protection = 0
+		end
+	end
+
+	-- Total protection adjusted by damage source
+	printf('%s + %s + %s + %s', helmet_protection, armor_protection, artefacts_protection, booster_protection)
+
+
+	-- Special case if ammo do not penetrate armor
+	no_pen = 0
+	if shit.type == hit.fire_wound then
+		if grok_actor_damage_balancer.headshot == 1 then
+			printf('ammo pen = %s', k_ap)
+			printf('armor class = %s', helmet_bone_value)
+			if k_ap < helmet_bone_value then
+				helmet_protection = helmet_protection * 0.2 + helmet_bone_value * 1.3
+				printf("ammo didn't penetrate armor, damage reduction applied")
+				no_pen = 1
+			end
+		else
+			printf('ammo pen = %s', k_ap)
+			printf('armor class = %s', armor_bone_value)
+			printf('plates armor class = %s', artefacts_ap_res)
+			armor_bone_value = armor_bone_value + artefacts_ap_res
+			printf('total armor class = %s', armor_bone_value)
+			if k_ap < armor_bone_value then
+				armor_protection = armor_protection * 0.2 + armor_bone_value * 1.3
+				printf("ammo didn't penetrate armor, damage reduction applied")
+				no_pen = 1
+			end
+		end
+	end
+
+	grok_actor_damage_balancer.total_prot = (helmet_protection + armor_protection + artefacts_protection + booster_protection)
+	-- Max protection limiter to avoid immunity to damages
+	if grok_actor_damage_balancer.total_prot > limiter then
+		grok_actor_damage_balancer.total_prot = limiter
+	end
+end
+
+
+base_booster = grok_actor_damage_balancer.shit_booster
+function grok_actor_damage_balancer.shit_booster(shit, bone_id, k_ap)
+	local base_health = db.actor.health or 0
+	local damage = 0
+	
+	base_booster(shit, bone_id, k_ap)
+	
+	damage = base_health - db.actor.health
+	
+	-- reduce condition if using GPR items (10% of the hit's value, regardless of hit-type due to parts' fragility)
+	db.actor:iterate_belt( function(owner, obj)
+		local sec = obj:section()
+		local cond = obj:condition()
+		
+		if gpr_parts[sec] then
+			cond = clamp(cond - (0.125 * damage), 0, 1)
+			obj:set_condition(cond)
+			printf('GPR Item (%s) condition dmg = %s', sec, damage * 0.125)
+		end
+	end)
+	
+end
