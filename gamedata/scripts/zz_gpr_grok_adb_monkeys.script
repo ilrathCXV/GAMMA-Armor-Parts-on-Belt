@@ -1,49 +1,3 @@
--- list of all wearable parts
-local gpr_parts =
-{
-	["prt_o_ballistic_1"] = 0.01,
-	["prt_o_ballistic_2"] = 0.017,
-	["prt_o_ballistic_3"] = 0.01,
-	["prt_o_ballistic_4"] = 0.01,
-	["prt_o_ballistic_5"] = 0.0033,
-	["prt_o_ballistic_6"] = 0.0033,
-	["prt_o_ballistic_7"] = 0,
-	["prt_o_ballistic_8"] = 0,
-	["prt_o_ballistic_9"] = 0,
-	["prt_o_ballistic_10"] = 0,
-	["prt_o_ballistic_11"] = 0,
-	["prt_o_ballistic_12"] = 0,
-	["prt_o_ballistic_13"] = 0,
-	["prt_o_ballistic_14"] = 0,
-	["prt_o_ballistic_15"] = 0.0033,
-	["prt_o_ballistic_16"] = 0,
-	["prt_o_ballistic_17"] = 0,
-	["prt_o_ballistic_18"] = 0,
-	["prt_o_ballistic_19"] = 0.01,
-	["prt_o_ballistic_20"] = 0,
-	
-	["prt_o_retardant_1"] = 0,
-	["prt_o_retardant_2"] = 0,
-	["prt_o_retardant_3"] = 0,
-	["prt_o_retardant_4"] = 0,
-	["prt_o_retardant_5"] = 0,
-	["prt_o_retardant_6"] = 0,
-	["prt_o_retardant_7"] = 0,
-	["prt_o_retardant_8"] = 0,
-	["prt_o_retardant_9"] = 0,
-	["prt_o_retardant_10"] = 0,
-	["prt_o_retardant_11"] = 0,
-	["prt_o_retardant_12"] = 0,
-	["prt_o_retardant_13"] = 0,
-	["prt_o_retardant_14"] = 0,
-	["prt_o_retardant_15"] = 0,
-	["prt_o_retardant_16"] = 0,
-	["prt_o_retardant_17"] = 0,
-	["prt_o_retardant_18"] = 0,
-	["prt_o_retardant_19"] = 0,
-	["prt_o_retardant_20"] = 0,
-}
-
 -- needed for the monkeypatch
 local hitboxes={}
 	hitboxes[19]="head"
@@ -262,8 +216,8 @@ function grok_actor_damage_balancer.get_protection(shit,bone_id,k_ap)
 		if sec == "af_plates_up" then
 			af_bone_value = 0.06
 		end
-		if gpr_parts[sec] then
-			af_bone_value = gpr_parts[sec] * cond
+		if a_z_armor_part_stats.gpr_parts[sec] then
+			af_bone_value = a_z_armor_part_stats.gpr_parts[sec] * cond
 			was_grp_part = true
 		end
 
@@ -355,15 +309,15 @@ function grok_actor_damage_balancer.shit_booster(shit, bone_id, k_ap)
 	
 	damage = base_health - db.actor.health
 	
-	-- reduce condition if using GPR items (10% of the hit's value, regardless of hit-type due to parts' fragility)
+	-- reduce condition if using GPR items (50% of the hit's value, regardless of hit-type due to parts' fragility)
 	db.actor:iterate_belt( function(owner, obj)
 		local sec = obj:section()
 		local cond = obj:condition()
 		
-		if gpr_parts[sec] then
-			cond = clamp(cond - (0.125 * damage), 0, 1)
+		if a_z_armor_part_stats.gpr_parts[sec] then
+			cond = clamp(cond - (0.5 * damage), 0, 1)
 			obj:set_condition(cond)
-			printf('GPR Item (%s) condition dmg = %s', sec, damage * 0.125)
+			printf('GPR Item (%s) condition dmg = %s', sec, damage * 0.5)
 		end
 	end)
 	

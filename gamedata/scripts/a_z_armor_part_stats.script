@@ -1,0 +1,62 @@
+-- list of all wearable parts
+gpr_parts =
+{
+	["prt_o_ballistic_1"] = 0.01,
+	["prt_o_ballistic_2"] = 0.017,
+	["prt_o_ballistic_3"] = 0.01,
+	["prt_o_ballistic_4"] = 0.01,
+	["prt_o_ballistic_5"] = 0.0033,
+	["prt_o_ballistic_6"] = 0.0033,
+	["prt_o_ballistic_7"] = 0,
+	["prt_o_ballistic_8"] = 0,
+	["prt_o_ballistic_9"] = 0,
+	["prt_o_ballistic_10"] = 0,
+	["prt_o_ballistic_11"] = 0,
+	["prt_o_ballistic_12"] = 0,
+	["prt_o_ballistic_13"] = 0,
+	["prt_o_ballistic_14"] = 0,
+	["prt_o_ballistic_15"] = 0.0033,
+	["prt_o_ballistic_16"] = 0,
+	["prt_o_ballistic_17"] = 0,
+	["prt_o_ballistic_18"] = 0,
+	["prt_o_ballistic_19"] = 0.01,
+	["prt_o_ballistic_20"] = 0,
+	
+	["prt_o_retardant_1"] = 0,
+	["prt_o_retardant_2"] = 0,
+	["prt_o_retardant_3"] = 0,
+	["prt_o_retardant_4"] = 0,
+	["prt_o_retardant_5"] = 0,
+	["prt_o_retardant_6"] = 0,
+	["prt_o_retardant_7"] = 0,
+	["prt_o_retardant_8"] = 0,
+	["prt_o_retardant_9"] = 0,
+	["prt_o_retardant_10"] = 0,
+	["prt_o_retardant_11"] = 0,
+	["prt_o_retardant_12"] = 0,
+	["prt_o_retardant_13"] = 0,
+	["prt_o_retardant_14"] = 0,
+	["prt_o_retardant_15"] = 0,
+	["prt_o_retardant_16"] = 0,
+	["prt_o_retardant_17"] = 0,
+	["prt_o_retardant_18"] = 0,
+	["prt_o_retardant_19"] = 0,
+	["prt_o_retardant_20"] = 0,
+}
+
+-- Needed in order for them to get the correct accurate stats
+
+GetTable = utils_ui.get_stats_table
+function utils_ui.get_stats_table(sec)
+    if gpr_parts[sec] then
+        return utils_ui.stats_table["artefact"]
+    else
+        return GetTable(sec)
+    end
+end
+
+GetType = utils_ui.UIInfoItem.GetType
+function utils_ui.UIInfoItem:GetType(sec)
+    if gpr_parts[sec] then return "artefact"
+    else return GetType(self, sec) end
+end
